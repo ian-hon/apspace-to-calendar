@@ -1,3 +1,4 @@
+from hashlib import sha256
 import os.path
 import requests
 
@@ -70,7 +71,8 @@ try:
     ).execute().get("items", [])
     
     for e in available:
-        if len([i for i in current if i['description'] == e['CLASS_CODE']]) >= 1:
+        key = str(sha256(f"{e['CLASS_CODE']}___{e['TIME_FROM_ISO']}".encode('utf-8')).hexdigest())
+        if len([i for i in current if i['description'] == key]) >= 1:
             print(f"\t{e['CLASS_CODE']} already exists")
             continue
         print(f'{e['MODULE_NAME']} at {e['TIME_FROM_ISO']} added')
@@ -79,7 +81,7 @@ try:
             calendarId=CALENDAR_ID,
             body={
                 'summary': e['MODULE_NAME'] + ['', ' (Online)'][e['ROOM'][0:4] == 'ONLM'],
-                'description': e['CLASS_CODE'],
+                'description': key,
                 'location': e['ROOM'],
                 'start': {
                     'dateTime': e['TIME_FROM_ISO'],
