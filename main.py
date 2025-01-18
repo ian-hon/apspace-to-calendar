@@ -1,6 +1,7 @@
 from hashlib import sha256
 import os.path
 import requests
+import time
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -8,11 +9,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-CALENDAR_ID = '8dcec3c140098c8aff7afed11605727ae8b4eeef6522c88ae0c41a8f2ed1ebd7@group.calendar.google.com'
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
-
-# https://s3-ap-southeast-1.amazonaws.com/open-ws/weektimetable
-# https://calendar.google.com/calendar/u/0?cid=OGRjZWMzYzE0MDA5OGM4YWZmN2FmZWQxMTYwNTcyN2FlOGI0ZWVlZjY1MjJjODhhZTBjNDFhOGYyZWQxZWJkN0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t
 
 # region auth-related
 creds = None
@@ -58,27 +55,25 @@ if response.status_code != 200:
     'COLOR': 'yellow'
 }
 
-# online : ROOM starts with 'ONLM'
-available = [i for i in response.json() if (i['INTAKE'] == 'UCDF2408ICT(SE)') and (i['GROUPING'] == 'G1')] # sorry g2
-
-try:
-    service = build("calendar", "v3", credentials=creds)
-    
+def add_events(calendar_id, intake, grouping, service):
+    # online : ROOM starts with 'ONLM'
+    available = [i for i in response.json() if (i['INTAKE'] == intake) and (i['GROUPING'] == grouping)]
+    # print(available)
     current = service.events().list(
-        calendarId=CALENDAR_ID,
+        calendarId=calendar_id,
         singleEvents=True,
         orderBy="startTime",
     ).execute().get("items", [])
-    
+
     for e in available:
-        key = str(sha256(f"{e['CLASS_CODE']}___{e['TIME_FROM_ISO']}".encode('utf-8')).hexdigest())
+        key = str(sha256(f'{e['CLASS_CODE']}___{e['TIME_FROM_ISO']}'.encode('utf-8')).hexdigest())
         if len([i for i in current if i['description'] == key]) >= 1:
-            print(f"\t{e['CLASS_CODE']} already exists")
+            print(f'\t{e['CLASS_CODE']} already exists')
             continue
         print(f'{e['MODULE_NAME']} at {e['TIME_FROM_ISO']} added')
         
         service.events().insert(
-            calendarId=CALENDAR_ID,
+            calendarId=calendar_id,
             body={
                 'summary': e['MODULE_NAME'] + ['', ' (Online)'][e['ROOM'][0:4] == 'ONLM'],
                 'description': key,
@@ -94,5 +89,22 @@ try:
             }
         ).execute()
 
-except HttpError as error:
-    print(f"http err: {error}")
+
+while True:
+    try:
+        service = build("calendar", "v3", credentials=creds)
+        
+        for i in [
+            # https://calendar.google.com/calendar/u/0?cid=OGRjZWMzYzE0MDA5OGM4YWZmN2FmZWQxMTYwNTcyN2FlOGI0ZWVlZjY1MjJjODhhZTBjNDFhOGYyZWQxZWJkN0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t
+            ['8dcec3c140098c8aff7afed11605727ae8b4eeef6522c88ae0c41a8f2ed1ebd7@group.calendar.google.com', 'UCDF2408ICT(SE)', 'G1'],
+            # https://calendar.google.com/calendar/u/0?cid=MTJiOWZkY2MxZDJiODk2YjgxMWRiZTk2MmI1YjU0MmM5NWRlNTg0YTJkMzVmMmY0YmQzZmE3NmY4ZTYxMTc4N0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t
+            ['12b9fdcc1d2b896b811dbe962b5b542c95de584a2d35f2f4bd3fa76f8e611787@group.calendar.google.com', 'UCDF2408ICT(SE)', 'G2'],
+        ]:
+            print(f'adding events for {i[2]} {i[1]}')
+            add_events(i[0], i[1], i[2], service)
+        
+    except HttpError as error:
+        print(f"http err: {error}")
+    
+    print(f'finished at {time.strftime('%Y/%m/%d %H:%M:%S', time.localtime())}')
+    time.sleep(86400)
