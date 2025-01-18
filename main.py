@@ -66,11 +66,11 @@ def add_events(calendar_id, intake, grouping, service):
     ).execute().get("items", [])
 
     for e in available:
-        key = str(sha256(f'{e['CLASS_CODE']}___{e['TIME_FROM_ISO']}'.encode('utf-8')).hexdigest())
+        key = str(sha256(f"{e['CLASS_CODE']}___{e['TIME_FROM_ISO']}".encode('utf-8')).hexdigest())
         if len([i for i in current if i['description'] == key]) >= 1:
-            print(f'\t{e['CLASS_CODE']} already exists')
+            print(f"\t{e['CLASS_CODE']} already exists")
             continue
-        print(f'{e['MODULE_NAME']} at {e['TIME_FROM_ISO']} added')
+        print(f"{e['MODULE_NAME']} at {e['TIME_FROM_ISO']} added")
         
         service.events().insert(
             calendarId=calendar_id,
@@ -106,5 +106,5 @@ while True:
     except HttpError as error:
         print(f"http err: {error}")
     
-    print(f'finished at {time.strftime('%Y/%m/%d %H:%M:%S', time.localtime())}')
+    print(f"finished at {time.strftime('%Y/%m/%d %H:%M:%S', time.localtime())}")
     time.sleep(86400)
