@@ -27,12 +27,6 @@ if not creds or not creds.valid:
         token.write(creds.to_json())
 # endregion
 
-# apiit has bad security lol
-response = requests.get('https://s3-ap-southeast-1.amazonaws.com/open-ws/weektimetable')
-
-if response.status_code != 200:
-    print('backend unreachable')
-
 # sample output
 {
     'INTAKE': 'UCDF2408ICT(SE)',
@@ -55,7 +49,7 @@ if response.status_code != 200:
     'COLOR': 'yellow'
 }
 
-def add_events(calendar_id, intake, grouping, service):
+def add_events(calendar_id, intake, grouping, service, response):
     # online : ROOM starts with 'ONLM'
     available = [i for i in response.json() if (i['INTAKE'] == intake) and (i['GROUPING'] == grouping)]
     # print(available)
@@ -94,6 +88,12 @@ while True:
     try:
         service = build("calendar", "v3", credentials=creds)
         
+        # apiit has bad security lol
+        response = requests.get('https://s3-ap-southeast-1.amazonaws.com/open-ws/weektimetable')
+
+        if response.status_code != 200:
+            print('backend unreachable')
+        
         for i in [
             # https://calendar.google.com/calendar/u/0?cid=OGRjZWMzYzE0MDA5OGM4YWZmN2FmZWQxMTYwNTcyN2FlOGI0ZWVlZjY1MjJjODhhZTBjNDFhOGYyZWQxZWJkN0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t
             ['8dcec3c140098c8aff7afed11605727ae8b4eeef6522c88ae0c41a8f2ed1ebd7@group.calendar.google.com', 'UCDF2408ICT(SE)', 'G1'],
@@ -103,7 +103,7 @@ while True:
             ['2cc9194e712764cac3b1ed423ca21d14c3c3e5af129ee786bd94591d6ee4a347@group.calendar.google.com', 'UCDF2408ICT', 'G1']
         ]:
             print(f'adding events for {i[2]} {i[1]}')
-            add_events(i[0], i[1], i[2], service)
+            add_events(i[0], i[1], i[2], service, response)
         
     except HttpError as error:
         print(f"http err: {error}")
