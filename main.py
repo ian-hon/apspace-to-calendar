@@ -99,6 +99,8 @@ while True:
             ['8dcec3c140098c8aff7afed11605727ae8b4eeef6522c88ae0c41a8f2ed1ebd7@group.calendar.google.com', 'UCDF2408ICT(SE)', 'G1'],
             # https://calendar.google.com/calendar/u/0?cid=MTJiOWZkY2MxZDJiODk2YjgxMWRiZTk2MmI1YjU0MmM5NWRlNTg0YTJkMzVmMmY0YmQzZmE3NmY4ZTYxMTc4N0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t
             ['12b9fdcc1d2b896b811dbe962b5b542c95de584a2d35f2f4bd3fa76f8e611787@group.calendar.google.com', 'UCDF2408ICT(SE)', 'G2'],
+            # https://calendar.google.com/calendar/embed?src=2cc9194e712764cac3b1ed423ca21d14c3c3e5af129ee786bd94591d6ee4a347%40group.calendar.google.com&ctz=Asia%2FKuching
+            ['2cc9194e712764cac3b1ed423ca21d14c3c3e5af129ee786bd94591d6ee4a347@group.calendar.google.com', 'UCDF2408ICT', 'G1']
         ]:
             print(f'adding events for {i[2]} {i[1]}')
             add_events(i[0], i[1], i[2], service)
