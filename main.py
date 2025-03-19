@@ -100,7 +100,9 @@ while True:
             # https://calendar.google.com/calendar/u/0?cid=MTJiOWZkY2MxZDJiODk2YjgxMWRiZTk2MmI1YjU0MmM5NWRlNTg0YTJkMzVmMmY0YmQzZmE3NmY4ZTYxMTc4N0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t
             ['12b9fdcc1d2b896b811dbe962b5b542c95de584a2d35f2f4bd3fa76f8e611787@group.calendar.google.com', 'UCDF2408ICT(SE)', 'G2'],
             # https://calendar.google.com/calendar/embed?src=2cc9194e712764cac3b1ed423ca21d14c3c3e5af129ee786bd94591d6ee4a347%40group.calendar.google.com&ctz=Asia%2FKuching
-            ['2cc9194e712764cac3b1ed423ca21d14c3c3e5af129ee786bd94591d6ee4a347@group.calendar.google.com', 'UCDF2408ICT', 'G1']
+            ['2cc9194e712764cac3b1ed423ca21d14c3c3e5af129ee786bd94591d6ee4a347@group.calendar.google.com', 'UCDF2408ICT', 'G1'],
+            # https://calendar.google.com/calendar/embed?src=f9ae12295820edc0da97762f396a29c6634ab3422483a5db3bce06dde759b8ae%40group.calendar.google.com&ctz=Asia%2FKuching
+            ['f9ae12295820edc0da97762f396a29c6634ab3422483a5db3bce06dde759b8ae@group.calendar.google.com', 'UCFF2503CT', 'G1']
         ]:
             print(f'adding events for {i[2]} {i[1]}')
             add_events(i[0], i[1], i[2], service, response)
@@ -109,4 +111,4 @@ while True:
         print(f"http err: {error}")
     
     print(f"finished at {time.strftime('%Y/%m/%d %H:%M:%S', time.localtime())}")
-    time.sleep(86400)
+    time.sleep(86400 * 3) # dont want to hit the limit by google free tier
