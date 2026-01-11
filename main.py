@@ -52,11 +52,12 @@ if not creds or not creds.valid:
 def add_events(calendar_id, intake, grouping, service, response):
     # online : ROOM starts with 'ONLM'
     available = [i for i in response.json() if (i['INTAKE'] == intake) and (i['GROUPING'] == grouping)]
-    # print(available)
     current = service.events().list(
         calendarId=calendar_id,
         singleEvents=True,
         orderBy="startTime",
+        # maxResults=50,
+        timeMin='2026-01-01T00:00:00.000Z'
     ).execute().get("items", [])
 
     for e in available:
@@ -64,12 +65,18 @@ def add_events(calendar_id, intake, grouping, service, response):
         if len([i for i in current if i['description'] == key]) >= 1:
             print(f"\t{e['CLASS_CODE']} already exists")
             continue
-        print(f"{e['MODULE_NAME']} at {e['TIME_FROM_ISO']} added")
+        # print(f"{e['MODULE_NAME']} at {e['TIME_FROM_ISO']} added")
+        # print(f"{e['MODID']}{({'L':' (L)', 'T':'', 'LAB':''}[(e['MODID'].split('-')[-2])])})")
+        
+        # print(({'L':'(LEC) ', 'T':'', 'LAB':''}[(e['MODID'].split('-')[-2])]) + e['MODULE_NAME'] + ['', ' (Online)'][e['ROOM'][0:4] == 'ONLM'])
+        # print(({'L':'(LEC) ', 'T':'', 'LAB':''}[(e['MODID'].split('-')[-2])]) + (e['MODID'].split('-')[-3]) + ['', ' (Online)'][e['ROOM'][0:4] == 'ONLM'])
+        # print((e['MODID'].split('-')[-3]) + ({'L':' (LEC)', 'T':'', 'LAB':''}[(e['MODID'].split('-')[-2])]) + ['', ' (Online)'][e['ROOM'][0:4] == 'ONLM'])
         
         service.events().insert(
             calendarId=calendar_id,
             body={
-                'summary': e['MODULE_NAME'] + ['', ' (Online)'][e['ROOM'][0:4] == 'ONLM'],
+                # 'summary': e['MODULE_NAME'] + ['', ' (Online)'][e['ROOM'][0:4] == 'ONLM'],
+                'summary': ({'L':'(Lec) ', 'T':'', 'LAB':''}[(e['MODID'].split('-')[-2])]) + (e['MODID'].split('-')[-3]) + ['', ' (Online)'][e['ROOM'][0:4] == 'ONLM'],
                 'description': key,
                 'location': e['ROOM'],
                 'start': {
