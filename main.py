@@ -65,7 +65,7 @@ def add_events(calendar_id, intake, grouping, service, response):
         if len([i for i in current if i['description'] == key]) >= 1:
             print(f"\t{e['CLASS_CODE']} already exists")
             continue
-        # print(f"{e['MODULE_NAME']} at {e['TIME_FROM_ISO']} added")
+        print(f"{e['MODULE_NAME']} at {e['TIME_FROM_ISO']} added")
         # print(f"{e['MODID']}{({'L':' (L)', 'T':'', 'LAB':''}[(e['MODID'].split('-')[-2])])})")
         
         # print(({'L':'(LEC) ', 'T':'', 'LAB':''}[(e['MODID'].split('-')[-2])]) + e['MODULE_NAME'] + ['', ' (Online)'][e['ROOM'][0:4] == 'ONLM'])
