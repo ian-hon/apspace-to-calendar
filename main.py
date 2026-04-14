@@ -28,7 +28,7 @@ if not creds or not creds.valid:
 # endregion
 
 # sample output
-_ = {
+{
     'INTAKE': 'UCDF2408ICT(SE)',
     'MODID': 'AICT015-4-1-DBM-L-1',
     'MODULE_NAME': 'Database Management',
@@ -51,45 +51,7 @@ _ = {
 
 def add_events(calendar_id, intake, grouping, service, response):
     # online : ROOM starts with 'ONLM'
-    available = [i for i in response.json() if (i['INTAKE'] == intake)]
-    
-    if intake.strip() == 'UCDF2408ICT(SE)':
-        # hotfix for apu schedule bug
-        module_min_numbers = {}
-        for e in available:
-            modid_parts = e['MODID'].split('-')
-            class_type = modid_parts[-2]  # L, T, or LAB
-            
-            if class_type != 'L': 
-                module_code = '-'.join(modid_parts[:-2])
-                last_number = int(modid_parts[-1])
-                
-                if module_code not in module_min_numbers:
-                    module_min_numbers[module_code] = last_number
-                else:
-                    module_min_numbers[module_code] = min(module_min_numbers[module_code], last_number)
-        
-        filtered_available = []
-        for e in available:
-            modid_parts = e['MODID'].split('-')
-            class_type = modid_parts[-2]  # L, T, or LAB
-            last_number = int(modid_parts[-1])
-            
-            if class_type == 'L':
-                filtered_available.append(e)
-            else:
-                module_code = '-'.join(modid_parts[:-2])
-                is_g1 = last_number == module_min_numbers.get(module_code, last_number)
-                
-                if grouping == 'G1' and is_g1:
-                    filtered_available.append(e)
-                elif grouping == 'G2' and not is_g1:
-                    filtered_available.append(e)
-        
-        available = filtered_available
-    else:
-        available = [i for i in available if i['GROUPING'] == grouping]
-    
+    available = [i for i in response.json() if (i['INTAKE'] == intake) and (i['GROUPING'] == grouping)]
     current = service.events().list(
         calendarId=calendar_id,
         singleEvents=True,
@@ -147,7 +109,7 @@ while True:
             # https://calendar.google.com/calendar/embed?src=2cc9194e712764cac3b1ed423ca21d14c3c3e5af129ee786bd94591d6ee4a347%40group.calendar.google.com&ctz=Asia%2FKuching
             ['2cc9194e712764cac3b1ed423ca21d14c3c3e5af129ee786bd94591d6ee4a347@group.calendar.google.com', 'UCDF2408ICT', 'G1'],
             # https://calendar.google.com/calendar/embed?src=f9ae12295820edc0da97762f396a29c6634ab3422483a5db3bce06dde759b8ae%40group.calendar.google.com&ctz=Asia%2FKuching
-            # ['f9ae12295820edc0da97762f396a29c6634ab3422483a5db3bce06dde759b8ae@group.calendar.google.com', 'UCFF2503CT', 'G1']
+            ['f9ae12295820edc0da97762f396a29c6634ab3422483a5db3bce06dde759b8ae@group.calendar.google.com', 'UCFF2503CT', 'G1']
         ]:
             print(f'adding events for {i[2]} {i[1]}')
             add_events(i[0], i[1], i[2], service, response)
