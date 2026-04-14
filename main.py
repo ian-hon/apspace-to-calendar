@@ -100,9 +100,6 @@ def add_events(calendar_id, intake, grouping, service, response):
 
     for e in available:
         key = str(sha256(f"{e['CLASS_CODE']}___{e['TIME_FROM_ISO']}".encode('utf-8')).hexdigest())
-        # in the case of hashing errors, use the one below
-        # apu somehow set the class_code to be equivalent to grouping
-        # key = str(sha256(f"{e['CLASS_CODE']}_{e['MODID']}_{e['TIME_FROM_ISO']}".encode('utf-8')).hexdigest())
         if len([i for i in current if i['description'] == key]) >= 1:
             print(f"\t{e['CLASS_CODE']} already exists")
             continue
