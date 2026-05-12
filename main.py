@@ -75,8 +75,7 @@ def add_events(calendar_id, intake, grouping, service, response):
         service.events().insert(
             calendarId=calendar_id,
             body={
-                # 'summary': e['MODULE_NAME'] + ['', ' (Online)'][e['ROOM'][0:4] == 'ONLM'],
-                'summary': ({'L':'(Lec) ', 'T':'', 'LAB':''}[(e['MODID'].split('-')[-2])]) + (e['MODID'].split('-')[-3]) + ['', ' (Online)'][e['ROOM'][0:4] == 'ONLM'],
+                'summary': ({'L':'(Lec) ', 'T':'', 'LAB':''}[(e['MODID'].split('-')[-2])[0]]) + (e['MODID'].split('-')[-3]) + ['', ' (Online)'][e['ROOM'][0:4] == 'ONLM'],
                 'description': key,
                 'location': e['ROOM'],
                 'start': {
@@ -109,7 +108,9 @@ while True:
             # https://calendar.google.com/calendar/embed?src=2cc9194e712764cac3b1ed423ca21d14c3c3e5af129ee786bd94591d6ee4a347%40group.calendar.google.com&ctz=Asia%2FKuching
             ['2cc9194e712764cac3b1ed423ca21d14c3c3e5af129ee786bd94591d6ee4a347@group.calendar.google.com', 'UCDF2408ICT', 'G1'],
             # https://calendar.google.com/calendar/embed?src=f9ae12295820edc0da97762f396a29c6634ab3422483a5db3bce06dde759b8ae%40group.calendar.google.com&ctz=Asia%2FKuching
-            ['f9ae12295820edc0da97762f396a29c6634ab3422483a5db3bce06dde759b8ae@group.calendar.google.com', 'UCFF2503CT', 'G1']
+            ['f9ae12295820edc0da97762f396a29c6634ab3422483a5db3bce06dde759b8ae@group.calendar.google.com', 'UCFF2503CT', 'G1'],
+            # https://calendar.google.com/calendar/embed?src=b2e0da73a0ea1ebeee41f539fe98308bcdfb1cfb16735e727def8adb1104023c%40group.calendar.google.com&ctz=Asia%2FKuching
+            ['b2e0da73a0ea1ebeee41f539fe98308bcdfb1cfb16735e727def8adb1104023c@group.calendar.google.com', 'APD1F2603CGD(GT)', 'G1']
         ]:
             print(f'adding events for {i[2]} {i[1]}')
             add_events(i[0], i[1], i[2], service, response)
